@@ -165,6 +165,13 @@
     flex-shrink: 0;
   }
 
+  .highlight.info {
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-color: rgba(79,142,247,0.25);
+  }
+  .highlight.info::before { background: var(--accent); }
+
   /* ── Divider ── */
   .divider {
     border: none;
@@ -198,7 +205,7 @@
 <header>
   <div class="badge">Extensión de Chrome</div>
   <h1>Política de Privacidad</h1>
-  <p class="subtitle">Última actualización: 9 de junio de 2026</p>
+  <p class="subtitle">Herramientas Asesor · Última actualización: 3 de agosto de 2026</p>
 </header>
 
 <main>
@@ -210,7 +217,22 @@
       </div>
       <h2>¿Qué hace esta extensión?</h2>
     </div>
-    <p>Esta extensión fue desarrollada para consultar información mediante un identificador de usuario. Su propósito es facilitar el acceso a datos específicos de forma rápida y segura, sin comprometer tu privacidad en ningún momento.</p>
+    <p>Herramientas Asesor es una extensión de uso interno para asesores. Permite registrar quejas y reclamos mediante un formulario guiado, guardar accesos rápidos, llevar un registro de ventas, tomar notas y compartir recordatorios ("papelitos") entre compañeros de equipo, con la información sincronizada entre los distintos computadores de cada usuario.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="icon">
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
+      <h2>Datos que sí recopilamos</h2>
+    </div>
+    <p>Para que la extensión funcione y tu información te acompañe entre computadores, guardamos:</p>
+    <ul style="margin-top:12px; padding-left:20px; color:var(--muted); font-size:14px; line-height:2;">
+      <li><strong style="color:var(--text)">Usuario y contraseña</strong>, para identificarte al iniciar sesión. La contraseña es gestionada de forma segura por Firebase Authentication (Google) y nunca se guarda en texto plano ni es visible para nosotros.</li>
+      <li><strong style="color:var(--text)">El contenido que tú mismo escribes</strong>: formularios de quejas, accesos guardados, notas, registros de ventas (por ejemplo, un ID de venta o un comentario) y papelitos de recordatorio.</li>
+      <li><strong style="color:var(--text)">Papelitos compartidos</strong>: si decides compartir una nota con otro usuario de la extensión, el texto y tu nombre de usuario se guardan para que esa persona pueda verla.</li>
+    </ul>
   </div>
 
   <div class="card">
@@ -220,24 +242,14 @@
       </div>
       <h2>Datos que NO recopilamos</h2>
     </div>
-    <p>Esta extensión <strong style="color:var(--text)">no recopila ni almacena</strong> ningún tipo de información personal, incluyendo:</p>
+    <p>Esta extensión <strong style="color:var(--text)">no recopila ni almacena</strong>:</p>
     <ul style="margin-top:12px; padding-left:20px; color:var(--muted); font-size:14px; line-height:2;">
-      <li>Nombres o datos de identidad</li>
-      <li>Números de identificación</li>
-      <li>Contraseñas o credenciales</li>
-      <li>Información de navegación o historial</li>
+      <li>Información financiera o de pago (tarjetas, montos bancarios, etc.)</li>
+      <li>Ubicación geográfica</li>
+      <li>Historial de navegación o actividad fuera de la extensión</li>
+      <li>Información de salud</li>
     </ul>
-    <div class="highlight">No se recopila información personal</div>
-  </div>
-
-  <div class="card">
-    <div class="card-header">
-      <div class="icon">
-        <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      </div>
-      <h2>Uso de la información</h2>
-    </div>
-    <p>El identificador que el usuario ingresa se utiliza <strong style="color:var(--text)">únicamente</strong> para realizar las consultas necesarias para el funcionamiento de la extensión. Esta información no se guarda, no se procesa más allá de la consulta inmediata y no persiste una vez cerrada la sesión.</p>
+    <div class="highlight">No se recopilan datos financieros ni de ubicación</div>
   </div>
 
   <div class="card">
@@ -245,10 +257,30 @@
       <div class="icon">
         <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
       </div>
+      <h2>Dónde se almacenan tus datos</h2>
+    </div>
+    <p>La información se guarda de forma segura en <strong style="color:var(--text)">Firebase (Google Cloud)</strong>, que actúa únicamente como infraestructura de almacenamiento para esta extensión. Firebase no tiene acceso a usar tus datos con fines propios.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="icon">
+        <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      </div>
       <h2>Compartición de datos con terceros</h2>
     </div>
-    <p>Esta extensión <strong style="color:var(--text)">no vende, comparte ni transfiere</strong> ningún tipo de información personal a terceros, bajo ninguna circunstancia.</p>
-    <div class="highlight">Tus datos nunca se comparten</div>
+    <p>Esta extensión <strong style="color:var(--text)">no vende, comparte ni transfiere</strong> tu información a terceros con fines publicitarios, comerciales ni de ningún otro tipo, bajo ninguna circunstancia.</p>
+    <div class="highlight">Tus datos nunca se venden ni se comparten</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="icon">
+        <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+      </div>
+      <h2>Cómo eliminar tus datos</h2>
+    </div>
+    <p>Puedes eliminar tu cuenta y todos los datos asociados a ella en cualquier momento desde el botón <strong style="color:var(--text)">"Eliminar usuario"</strong> dentro de la extensión, confirmando con tu contraseña. La eliminación es permanente e inmediata.</p>
   </div>
 
   <div class="card">
@@ -264,7 +296,7 @@
 </main>
 
 <footer>
-  <p>© 2026 Extensión de Chrome &nbsp;<span>·</span>&nbsp; Todos los derechos reservados</p>
+  <p>© 2026 Herramientas Asesor &nbsp;<span>·</span>&nbsp; Todos los derechos reservados</p>
 </footer>
 
 </body>
