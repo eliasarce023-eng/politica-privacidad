@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Laboratorio virtual - Conservación de la energía</title>
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--ink:#182230;--muted:#5f6b7a;--accent:#1769aa;--accent2:#0b8f6a;--line:#dce4ee}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);font-family:Arial,Helvetica,sans-serif;color:var(--ink)}
+.wrap{max-width:1100px;margin:auto;padding:24px}
+header{background:linear-gradient(135deg,#103b5c,#1769aa);color:#fff;border-radius:18px;padding:26px;box-shadow:0 8px 25px #0001}
+h1{margin:0 0 8px;font-size:30px} header p{margin:0;opacity:.92}
+.grid{display:grid;grid-template-columns:320px 1fr;gap:18px;margin-top:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 5px 18px #0000000a}
+label{display:block;font-weight:bold;margin:13px 0 6px}
+input[type=range]{width:100%}
+.value{font-weight:bold;color:var(--accent)}
+button{border:0;border-radius:10px;padding:11px 15px;background:var(--accent);color:#fff;font-weight:bold;cursor:pointer;margin:6px 4px 0 0}
+button.secondary{background:#6c7785} button.green{background:var(--accent2)}
+canvas{width:100%;height:340px;border:1px solid var(--line);border-radius:12px;background:#eef5fb}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+.metric{background:#f7f9fc;border:1px solid var(--line);border-radius:12px;padding:12px}
+.metric small{display:block;color:var(--muted);font-size:12px}.metric strong{font-size:20px}
+table{width:100%;border-collapse:collapse;margin-top:12px} th,td{padding:9px;border-bottom:1px solid var(--line);text-align:center} th{background:#f0f5fa}
+.note{background:#eef8f5;border-left:4px solid var(--accent2);padding:12px;border-radius:8px;margin-top:12px}
+.footer{color:var(--muted);font-size:13px;margin-top:18px}
+@media(max-width:800px){.grid{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<h1>Laboratorio virtual: Conservación de la energía</h1>
+<p>Experimento simulado: una esfera desciende por una rampa y transforma energía potencial gravitatoria en energía cinética.</p>
+</header>
+
+<div class="grid">
+<section class="card">
+<h2>Controles</h2>
+<label>Masa de la esfera: <span id="mVal" class="value">1.00 kg</span></label>
+<input id="mass" type="range" min="0.5" max="3" step="0.1" value="1">
+<label>Altura inicial: <span id="hVal" class="value">2.00 m</span></label>
+<input id="height" type="range" min="0.5" max="4" step="0.5" value="2">
+<label>Fricción simulada: <span id="fVal" class="value">0 %</span></label>
+<input id="friction" type="range" min="0" max="30" step="5" value="0">
+<button onclick="run()">▶ Ejecutar experimento</button>
+<button class="secondary" onclick="resetLab()">↺ Reiniciar</button>
+<button class="green" onclick="addRow()">＋ Guardar resultado</button>
+<div class="note"><b>Procedimiento:</b> cambia una variable, ejecuta la simulación y observa cómo cambia la energía. La simulación usa g = 9.81 m/s².</div>
+</section>
+
+<section class="card">
+<canvas id="lab" width="760" height="340"></canvas>
+<div class="metrics">
+<div class="metric"><small>Energía potencial inicial</small><strong id="ep">19.62 J</strong></div>
+<div class="metric"><small>Energía cinética final</small><strong id="ek">19.62 J</strong></div>
+<div class="metric"><small>Energía disipada</small><strong id="loss">0.00 J</strong></div>
+<div class="metric"><small>Velocidad final</small><strong id="vel">6.26 m/s</strong></div>
+</div>
+<p id="status" class="footer">Listo para ejecutar.</p>
+</section>
+</div>
+
+<section class="card" style="margin-top:18px">
+<h2>Registro de resultados</h2>
+<table>
+<thead><tr><th>#</th><th>Masa (kg)</th><th>Altura (m)</th><th>Fricción (%)</th><th>Ep (J)</th><th>Ec final (J)</th><th>Velocidad (m/s)</th></tr></thead>
+<tbody id="results"></tbody>
+</table>
+<p class="footer">Los resultados son generados por esta simulación educativa. Puedes tomar capturas de pantalla de la simulación para anexarlas a tu evidencia.</p>
+</section>
+</div>
+
+<script>
+const g=9.81;
+const mass=document.getElementById('mass'), height=document.getElementById('height'), friction=document.getElementById('friction');
+const mVal=document.getElementById('mVal'), hVal=document.getElementById('hVal'), fVal=document.getElementById('fVal');
+const canvas=document.getElementById('lab'), ctx=canvas.getContext('2d');
+let ballT=0, anim=null, rows=0;
+function calc(){
+  const m=+mass.value,h=+height.value,f=+friction.value/100;
+  const ep=m*g*h, loss=ep*f, ek=ep-loss, v=Math.sqrt(Math.max(0,2*ek/m));
+  return {m,h,f,ep,loss,ek,v};
+}
+function updateLabels(){mVal.textContent=(+mass.value).toFixed(2)+' kg';hVal.textContent=(+height.value).toFixed(2)+' m';fVal.textContent=friction.value+' %';}
+[mass,height,friction].forEach(x=>x.addEventListener('input',()=>{updateLabels();showCalc();draw(0);}));
+function showCalc(){
+ const c=calc();
+ document.getElementById('ep').textContent=c.ep.toFixed(2)+' J';
+ document.getElementById('ek').textContent=c.ek.toFixed(2)+' J';
+ document.getElementById('loss').textContent=c.loss.toFixed(2)+' J';
+ document.getElementById('vel').textContent=c.v.toFixed(2)+' m/s';
+}
+function draw(t){
+ ctx.clearRect(0,0,canvas.width,canvas.height);
+ // background
+ ctx.fillStyle='#eef5fb';ctx.fillRect(0,0,canvas.width,canvas.height);
+ // labels
+ ctx.fillStyle='#203040';ctx.font='bold 16px Arial';ctx.fillText('Energía potencial → energía cinética',24,28);
+ // ramp
+ const x1=90,y1=75,x2=650,y2=280;
+ ctx.strokeStyle='#52677a';ctx.lineWidth=14;ctx.lineCap='round';
+ ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+ ctx.strokeStyle='#9db0bf';ctx.lineWidth=3;
+ ctx.beginPath();ctx.moveTo(650,280);ctx.lineTo(650,305);ctx.lineTo(90,305);ctx.stroke();
+ const px=x1+(x2-x1)*t, py=y1+(y2-y1)*t;
+ ctx.fillStyle='#1769aa';ctx.beginPath();ctx.arc(px,py,17,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle='#fff';ctx.font='bold 13px Arial';ctx.textAlign='center';ctx.fillText('m',px,py+5);ctx.textAlign='left';
+ ctx.fillStyle='#203040';ctx.font='14px Arial';ctx.fillText('h = '+(+height.value).toFixed(1)+' m',92,60);
+ ctx.fillText('Inicio',80,330);ctx.fillText('Final',625,330);
+}
+function run(){
+ if(anim) cancelAnimationFrame(anim);
+ ballT=0;
+ const start=performance.now();
+ function step(now){
+  ballT=Math.min(1,(now-start)/1800);
+  draw(ballT);
+  if(ballT<1){anim=requestAnimationFrame(step)}
+  else {document.getElementById('status').textContent='Experimento terminado. Revisa las magnitudes y guarda el resultado.';}
+ }
+ document.getElementById('status').textContent='Simulación en ejecución...';
+ anim=requestAnimationFrame(step);
+}
+function addRow(){
+ const c=calc(); rows++;
+ const tr=document.createElement('tr');
+ tr.innerHTML=`<td>${rows}</td><td>${c.m.toFixed(2)}</td><td>${c.h.toFixed(2)}</td><td>${(c.f*100).toFixed(0)}</td><td>${c.ep.toFixed(2)}</td><td>${c.ek.toFixed(2)}</td><td>${c.v.toFixed(2)}</td>`;
+ document.getElementById('results').appendChild(tr);
+ document.getElementById('status').textContent='Resultado guardado en la tabla.';
+}
+function resetLab(){
+ if(anim) cancelAnimationFrame(anim); rows=0; document.getElementById('results').innerHTML='';
+ mass.value=1;height.value=2;friction.value=0;updateLabels();showCalc();draw(0);
+ document.getElementById('status').textContent='Laboratorio reiniciado.';
+}
+updateLabels();showCalc();draw(0);
+</script>
+</body>
+</html>
